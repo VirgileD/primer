@@ -43,12 +43,12 @@ def get_all_listing_pages(browser, category, config):
 
 def scrap_category(config, browser, category, shows):
     log = get_logger("scrap_category", cfg=config)
-    genre = category["genre"]
+    category_name = category.name
     spinner = Halo(spinner='dots')
     these_shows = {}
     for list_page in category["urls"]:
         type_ = list_page["type"]
-        spinner.text = f"Scraping '{genre}/{type_}'"
+        spinner.text = f"Scraping '{category_name}/{type_}'"
         spinner.start()
         browser.get(list_page["url"])
         
@@ -82,7 +82,7 @@ def scrap_category(config, browser, category, shows):
                     id = url.split('detail/')[1].split('/')[0]
                     if id not in these_shows:
                         tot += 1
-                        these_shows[id] = { "title": title, "url": url, "categories": [ genre ], "type": type_ }
+                        these_shows[id] = { "title": title, "url": url, "categories": [ category_name ], "type": type_ }
                     else:
                         reread += 1
                 except StaleElementReferenceException as e:
@@ -96,7 +96,7 @@ def scrap_category(config, browser, category, shows):
         # # Deletes the last line in the STDOUT"
         # sys.stdout.write('\x1b[1A')
         # sys.stdout.write('\x1b[2K')
-        log.info(f"    - found {tot} shows in '{genre}/{type_}' page ({reread} reread, {staled} staled)")
+        log.info(f"    - found {tot} shows in '{category_name}/{type_}' page ({reread} reread, {staled} staled)")
         save_all_shows(config, these_shows)
 
     already_known = 0
@@ -106,8 +106,8 @@ def scrap_category(config, browser, category, shows):
             shows[id] = these_show
             added += 1
         else:
-            shows[id]["categories"].append(genre)
+            shows[id]["categories"].append(category_name)
             already_known += 1
 
-    log.info(f"  => Added {added} shows from '{genre}' category / {already_known} others were already known and updated")
+    log.info(f"  => Added {added} shows from '{category_name}' category / {already_known} others were already known and updated")
     return shows
