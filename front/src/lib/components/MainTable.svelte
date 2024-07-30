@@ -1,7 +1,7 @@
 <script>
     import Pagination from "$lib/components/Pagination.svelte";
     import included from '$lib/images/included.png';
-    import { includedOnly } from '$lib/common/FilterService.js';
+    import { includedOnly, genresFilter, moodsFilter, wordsFilter, ratingMin } from '$lib/common/FilterService.js';
 
     export let data;
 
@@ -12,11 +12,21 @@
     let paginatedDisplayed = [];
 
     $: displayedShows = shows.filter(show => {
+            let filter = true;
             if($includedOnly) {
-                return show.included;
-            } else {
-                return true;
+                filter = filter && show.included;
             }
+            if($genresFilter.length > 0) {
+                filter = filter && $genresFilter.some(genre => show.genres.includes(genre));
+            }
+            if($wordsFilter.length > 0) {
+                console.log($wordsFilter)
+                let appears = $wordsFilter.some(/** @type {string} */ w => show.title.toLowerCase().includes(w.toLowerCase()));
+                appears = appears || $wordsFilter.some(/** @type {string} */ w => show.synopsis.toLowerCase().includes(w.toLowerCase()));
+                appears = appears || $wordsFilter.some(/** @type {string} */ w => show.starring.join(',').toLowerCase().includes(w.toLowerCase()));
+                filter = filter && appears;
+            }
+            return filter && show.rating >= $ratingMin;
         });
 
     const displayDuration = (/** @type {number} */ duration) => {
@@ -24,7 +34,7 @@
         const minutes = duration % 60;
         return `${hours}h ${minutes}m`;
     }
-    const displayedShowsHeaders = ['title', 'included', "rating", 'release_year', 'duration', 'synopsis', 'directors', 'starring'];
+    const displayedShowsHeaders = ['title', 'included', "rating", 'synopsis', 'genres', 'release_year'];
 </script>
 
 <section>
@@ -43,14 +53,12 @@
                     {#if show.included}
                         <td class="included"><img width="16px" src={included} alt="included" /></td>
                     {:else}
-                        <td class="included">{show.price}€</td>
+                        <td class="included">€ {show.price}</td>
                     {/if}
                     <td class="rating">{show.rating == -1.0 ? '?' : show.rating}</td>
-                    <td class="release_year">{show.release_year}</td>
-                    <td class="duration">{displayDuration(show.duration)}</td>
                     <td class="synopsis">{show.synopsis}</td>
-                    <td class="directors">{show.directors}</td>
-                    <td class="starring">{show.starring}</td>
+                    <td class="genres">{show.genres.join(', ')}</td>
+                    <td class="release_year">{show.release_year}</td>
                 </tr>
             {/each}
         </tbody>

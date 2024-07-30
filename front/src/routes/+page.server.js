@@ -4,9 +4,11 @@ export async function load(event) {
     if (event.locals.db === undefined) {
         throw new Error('db is undefined');
     }
-    /** @type {import('$lib/types').ShowList} */
+    /** @type {import('mongodb').Collection<import('$lib/types').Show>} */
     // @ts-ignore event.locals.db cannot be null at this point
-    let shows = await event.locals.db.collection('enriched').find({ $or: [ { rating: { $gte: 3.5 }}, { rating: -1.0 } ] }).toArray();
+    const enriched = event.locals.db.collection('enriched')
+    /** @type {import('$lib/types').ShowList} */
+    let shows = await enriched.find({ $or: [ { rating: { $gte: 3.5 }}, { rating: -1.0 } ] }).toArray();
     shows = shows.map(show => { return { ...show, _id: show._id.toString() } })
     // default sort by rating, then release year, then title
     shows.sort((a, b) => {
@@ -30,10 +32,15 @@ export async function load(event) {
         }
         return 0;
     });
+    /** @type {string[]} */
+    let genres = await enriched.distinct("genres", { $or: [ { rating: { $gte: 3.5 }}, { rating: -1.0 } ] })
+    /** @type {string[]} */
+    let moods = await enriched.distinct("moods", { $or: [ { rating: { $gte: 3.5 }}, { rating: -1.0 } ] })
     //console.log(shows);
 
-    /** @type {import('$lib/types').ShowList} */
     return {
-        shows
+        shows,
+        genres,
+        moods
     }
 }

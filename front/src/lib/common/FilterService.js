@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 
 let includedOnly = writable(false);
-let genres = writable([]);
+let genresFilter = writable([]);
+let moodsFilter = writable([]);
 let ratingMin = writable(0);
 let ratingMax = writable(10);
 let yearMin = writable(1900);
@@ -10,7 +11,8 @@ let wordsFilter = writable([]);
 
 export {
         includedOnly,
-        genres,
+        genresFilter,
+        moodsFilter,
         ratingMin,
         ratingMax,
         yearMin,

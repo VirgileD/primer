@@ -13,7 +13,7 @@
 
 <container>
     <div>
-        <Menu />
+        <Menu {data} />
     </div>
     <div>
         <MainTable {data} />

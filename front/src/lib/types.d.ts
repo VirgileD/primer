@@ -6,7 +6,6 @@ export type Show = {
     url: string;
     synopsis: string;
     rating: number;
-    categories: string[];
     genres: string[];
     moods: string[];
     duration: number;
