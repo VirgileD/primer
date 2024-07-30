@@ -6,7 +6,7 @@ def enrich_show(show, html_string):
     #     f.write(test)
     tree = html.fromstring(html_string)
     show.update({ "rating": None, "duration": None, "rating": -1.0, "release_year": None,
-                 "categories": ["N/A"], "genres": [ "N/A"], "moods": ["N/A"],
+                 "genres": [ "N/A"], "moods": ["N/A"],
                  "starring": ["N/A"], "directors": ["N/A"], "synopsis": "N/A", "included": True })
     
     rating = tree.xpath("//span[@data-automation-id='imdb-rating-badge']/text()")
