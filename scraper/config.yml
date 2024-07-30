@@ -1,0 +1,10 @@
+email: "vdevaux@gmail.com"
+password: ""
+filter_categories: ["Kids", "Documentary", "New and Upcoming", "Home Premiere", "Made in Europe" ] # filter out categories
+# "Kids", "Documentary", "New and Upcoming", "Home Premiere", "Made in Europe", "Action and adventure", "Comedy", "Drama", "Fantasy", "Horror", "Mystery and thrillers", "Romance", "Science fiction"
+store_url: "https://www.primevideo.com/region/eu/storefront" # the URL of the store, notice the "eu" in the URL, this is the region, you can change it to us, uk, etc.
+more_of: # on category page, we must click on the "View more" button to get more shows
+  "TV shows": "TV Show" # for example, click on the "View more" on the "Prime : TV shows" button you would list TV shows that are included. The value here must be either "Movie" or "TV Show"
+  "Movies": "Movie"
+  "Explore: Rent or buy movies": "Rent"
+db_uri: "mongodb://localhost:27017/shows"

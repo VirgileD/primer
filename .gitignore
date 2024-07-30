@@ -1,0 +1,10 @@
+.venv
+chrome-linux64/
+chromedriver-linux64/
+__pycache__
+.vscode
+**.csv
+**.json
+node_modules
+vite.config.js.timestamp-*
+
