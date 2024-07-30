@@ -1,6 +1,7 @@
 <script>
     import Pagination from "$lib/components/Pagination.svelte";
     import included from '$lib/images/included.png';
+    import { includedOnly } from '$lib/common/FilterService.js';
 
     export let data;
 
@@ -9,7 +10,15 @@
 
     /** @type {import('$lib/types').ShowList} */
     let paginatedDisplayed = [];
-    let displayedShows = shows.filter(show => false);
+
+    $: displayedShows = shows.filter(show => {
+            if($includedOnly) {
+                return show.included;
+            } else {
+                return true;
+            }
+        });
+
     const displayDuration = (/** @type {number} */ duration) => {
         const hours = Math.floor(duration / 60);
         const minutes = duration % 60;
@@ -34,7 +43,7 @@
                     {#if show.included}
                         <td class="included"><img width="16px" src={included} alt="included" /></td>
                     {:else}
-                        <td class="included">{show.price}</td>
+                        <td class="included">{show.price}€</td>
                     {/if}
                     <td class="rating">{show.rating == -1.0 ? '?' : show.rating}</td>
                     <td class="release_year">{show.release_year}</td>
@@ -47,7 +56,7 @@
         </tbody>
     </table>
     <!-- <SvelteTable columns="{columnSettings}" rows="{paginatedDisplayed}"></SvelteTable> -->
-    <Pagination rows={shows} perPage={10} bind:trimmedRows={paginatedDisplayed} />
+    <Pagination rows={displayedShows} perPage={10} bind:trimmedRows={paginatedDisplayed} />
 </section>
 
 <style>

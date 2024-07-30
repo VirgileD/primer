@@ -1,11 +1,10 @@
 <script>
-    import FiltersStore from '../stores/FiltersStore.js';
+    import { includedOnly } from '$lib/common/FilterService.js';
 
-    const setIncluded = () => {
-        FiltersStore.update(store => {
-            store.included = !store.included;
-            return store;
-        });
+    const setIncluded = (/** @type {Event} */ e) => {
+        if(e.target != null && e.target instanceof HTMLInputElement) {
+            $includedOnly = e.target.checked;
+        }
     }
 </script>
 
