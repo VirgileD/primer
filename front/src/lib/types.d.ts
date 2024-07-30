@@ -2,6 +2,7 @@ export type Show = {
     _id: string|import('mongodb').ObjectId;
     id: string;
     title: string;
+    type: 'Movie'|'TV Show'|'Rent';
     url: string;
     synopsis: string;
     rating: number;
@@ -15,7 +16,6 @@ export type Show = {
     price: number;
     included: boolean;
     duration: number;
-    type: string;
 };
 
 export type ShowList = Show[];
