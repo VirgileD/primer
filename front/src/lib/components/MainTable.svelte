@@ -9,42 +9,41 @@
 		ratingMin
 	} from '$lib/common/FilterService.js';
 
-	export let data;
+    /** @type {import('$lib/types').ShowList} */
+	export let shows = [];
+    export let loading = false;
 
-	/** @type {import('$lib/types').ShowList} */
-	export let shows = data.shows;
+    $: displayedShows = shows.filter((/** @type {import('$lib/types').Show} */ show) => {
+        let filter = true;
+        if ($includedOnly) {
+            filter = filter && show.included;
+        }
+        if ($genresFilter.length > 0) {
+            filter = filter && $genresFilter.every((/** @type {string} */ genre) => show.genres.includes(genre));
+        }
 
-	/** @type {import('$lib/types').ShowList} */
+        if ($wordsFilter.length > 0) {
+            let appears = $wordsFilter.some(
+                (/** @type {string} */w) => show.title.toLowerCase().includes(w.toLowerCase())
+            );
+            appears =
+                appears ||
+                $wordsFilter.some(
+                    (/** @type {string} */w)  => show.synopsis.toLowerCase().includes(w.toLowerCase())
+                );
+            appears =
+                appears ||
+                $wordsFilter.some(
+                    (/** @type {string} */w)  =>
+                        show.starring.join(',').toLowerCase().includes(w.toLowerCase())
+                );
+            filter = filter && appears;
+        }
+        return filter && show.rating >= $ratingMin;
+    });
+
+    /** @type {import('$lib/types').ShowList} */
 	let paginatedDisplayed = [];
-
-	$: displayedShows = shows.filter((show) => {
-		let filter = true;
-		if ($includedOnly) {
-			filter = filter && show.included;
-		}
-		if ($genresFilter.length > 0) {
-			filter = filter && $genresFilter.every((/** @type {string} */ genre) => show.genres.includes(genre));
-		}
-
-		if ($wordsFilter.length > 0) {
-			let appears = $wordsFilter.some(
-				(/** @type {string} */w) => show.title.toLowerCase().includes(w.toLowerCase())
-			);
-			appears =
-				appears ||
-				$wordsFilter.some(
-					(/** @type {string} */w)  => show.synopsis.toLowerCase().includes(w.toLowerCase())
-				);
-			appears =
-				appears ||
-				$wordsFilter.some(
-					(/** @type {string} */w)  =>
-						show.starring.join(',').toLowerCase().includes(w.toLowerCase())
-				);
-			filter = filter && appears;
-		}
-		return filter && show.rating >= $ratingMin;
-	});
 
 	const displayedShowsHeaders = [
 		'title',
@@ -87,7 +86,7 @@
 		</tbody>
 	</table>
 	<!-- <SvelteTable columns="{columnSettings}" rows="{paginatedDisplayed}"></SvelteTable> -->
-	<Pagination rows={displayedShows} perPage={10} bind:trimmedRows={paginatedDisplayed} />
+	<Pagination rows={displayedShows} perPage={10} bind:trimmedRows={paginatedDisplayed} {loading} />
 </section>
 
 <style>

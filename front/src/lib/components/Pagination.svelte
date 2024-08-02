@@ -5,6 +5,8 @@
 	export let perPage;
 	/** @type {import('$lib/types').ShowList} */
 	export let trimmedRows;
+    /** @type {boolean} */
+    export let loading = false;
 
 	/** @type {number} */
 	$: totalRows = rows.length;
@@ -119,6 +121,11 @@
 		<div>
 			<div>
 				{totalPages} pages of {perPage} short urls
+                {#if loading}
+                    <div>Still loading...</div>
+                {:else}
+                    <div>All shows are loaded</div>
+                {/if}
 			</div>
 		</div>
 	</div>

@@ -7,41 +7,19 @@ export async function load(event) {
 	// @ts-ignore event.locals.db cannot be null at this point
 	const enriched = event.locals.db.collection('enriched');
 	/** @type {import('$lib/types').ShowList} */
-	let shows = await enriched.find({ $or: [{ rating: { $gte: 3.5 } }, { rating: -1.0 }] }).toArray();
+	let shows = await enriched.find({ $or: [{ rating: { $gte: 3.5 } }, { rating: -1.0 }] }).limit(250).sort({ rating: -1, release_year:-1, title: 1 }).toArray();
 	shows = shows.map((show) => {
 		return { ...show, _id: show._id.toString() };
-	});
-	// default sort by rating, then release year, then title
-	shows.sort((a, b) => {
-		if (a.rating > b.rating) {
-			return -1;
-		}
-		if (a.rating < b.rating) {
-			return 1;
-		}
-		if (a.release_year > b.release_year) {
-			return -1;
-		}
-		if (a.release_year < b.release_year) {
-			return 1;
-		}
-		if (a.title > b.title) {
-			return -1;
-		}
-		if (a.title < b.title) {
-			return 1;
-		}
-		return 0;
 	});
 	/** @type {string[]} */
 	let genres = await enriched.distinct('genres', {
 		$or: [{ rating: { $gte: 3.5 } }, { rating: -1.0 }]
 	});
-	/** @type {string[]} */
-	//console.log(shows);
-
+    let totalShows = await enriched.countDocuments({ $or: [{ rating: { $gte: 3.5 } }, { rating: -1.0 }] });
+	
 	return {
 		shows,
 		genres,
+        totalShows
 	};
 }
