@@ -8,7 +8,11 @@ def enrich_show(show, html_string):
     show.update({ "rating": None, "duration": None, "rating": -1.0, "release_year": None,
                  "genres": [ "N/A"], "moods": ["N/A"],
                  "starring": ["N/A"], "directors": ["N/A"], "synopsis": "N/A", "included": True })
-    
+
+    title = tree.xpath("//h1[@data-automation-id='title']/text()")
+    if title:
+        show["title"] = title[0]
+
     rating = tree.xpath("//span[@data-automation-id='imdb-rating-badge']/text()")
     if rating:
         show["rating"] = float(rating[0].replace("IMDb ", ""))

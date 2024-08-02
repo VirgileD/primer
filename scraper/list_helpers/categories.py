@@ -27,7 +27,8 @@ def get_categories(config, browser):
         if category in config["filter_categories"]:
             continue
         categories.append({ "name": category, "main_page": category_element.get_attribute("href"), "urls": [] })
-    log.info(f"Found {len(categories)} categories: {', '.join([category.name for category in categories])}")
+
+    log.info(f"Found {len(categories)} categories: { ', '.join([ cat['name'] for cat in categories])}")
 
     return categories
 
@@ -43,7 +44,7 @@ def get_all_listing_pages(browser, category, config):
 
 def scrap_category(config, browser, category, shows):
     log = get_logger("scrap_category", cfg=config)
-    category_name = category.name
+    category_name = category['name']
     spinner = Halo(spinner='dots')
     these_shows = {}
     for list_page in category["urls"]:
