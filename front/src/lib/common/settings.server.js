@@ -1,4 +1,3 @@
-
 /**
  * Represents the settings for the MongoDB connection.
  * @typedef {Object} MongoSettings
@@ -17,15 +16,15 @@
  * @property {MongoSettings} mongo - The MongoDB connection settings.
  */
 const settings = {
-    mongo: /** @type {MongoSettings} */ {
-        host: process.env.NODE_ENV == 'development' ? '127.0.0.1' : '10.26.83.142',
-        db: 'shows',
-        user: null,
-        opts: {
-            connectTimeoutMS: 5000,
-            serverSelectionTimeoutMS: 5000
-        },
-    }
+	mongo: /** @type {MongoSettings} */ {
+		host: process.env.NODE_ENV == 'development' ? '127.0.0.1' : '10.26.83.142',
+		db: 'shows',
+		user: null,
+		opts: {
+			connectTimeoutMS: 5000,
+			serverSelectionTimeoutMS: 5000
+		}
+	}
 };
 
 export default settings;

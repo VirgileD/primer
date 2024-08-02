@@ -9,17 +9,17 @@ let dbConn = null;
  * @returns {Promise<void>}
  */
 const runAllTheInitFunctions = async () => {
-    dbConn = await init();
-}
+	dbConn = await init();
+};
 if (!building) {
-    await runAllTheInitFunctions();
+	await runAllTheInitFunctions();
 }
 
 /** @type {import('@sveltejs/kit').Handle} */
 export const handle = async ({ event, resolve }) => {
-    if (dbConn === null) {
-        await runAllTheInitFunctions();
-    }
-    event.locals.db = dbConn;
-    return resolve(event);
-}
+	if (dbConn === null) {
+		await runAllTheInitFunctions();
+	}
+	event.locals.db = dbConn;
+	return resolve(event);
+};

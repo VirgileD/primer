@@ -1,9 +1,9 @@
 <script>
-    import MainTable from '../lib/components/MainTable.svelte';
-    import Menu from '../lib/components/Menu.svelte';
+	import MainTable from '../lib/components/MainTable.svelte';
+	import Menu from '../lib/components/Menu.svelte';
 
-    /** @type {import('./$types').PageData} */
-    export let data;
+	/** @type {import('./$types').PageData} */
+	export let data;
 </script>
 
 <svelte:head>
@@ -12,20 +12,20 @@
 </svelte:head>
 
 <container>
-    <div>
-        <Menu {data} />
-    </div>
-    <div>
-        <MainTable {data} />
-    </div>
+	<div>
+		<Menu {data} />
+	</div>
+	<div>
+		<MainTable {data} />
+	</div>
 </container>
 
 <style>
-container {
-    display: grid;
-    grid-template-columns: 0.2fr 1.8fr;
-    grid-column-gap: 20px;
-    justify-items: stretch;
-    align-items: stretch;
-}
+	container {
+		display: grid;
+		grid-template-columns: 0.2fr 1.8fr;
+		grid-column-gap: 20px;
+		justify-items: stretch;
+		align-items: stretch;
+	}
 </style>

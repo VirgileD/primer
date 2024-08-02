@@ -5,11 +5,11 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-            db: import('mongodb').Db | null;
-        }
+			db: import('mongodb').Db | null;
+		}
 		interface PageData {
-            shows: import('$lib/types').ShowList;
-        }
+			shows: import('$lib/types').ShowList;
+		}
 
 		// interface PageState {}
 		// interface Platform {}

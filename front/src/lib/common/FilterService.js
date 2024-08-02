@@ -10,12 +10,12 @@ let yearMax = writable(2022);
 let wordsFilter = writable([]);
 
 export {
-        includedOnly,
-        genresFilter,
-        moodsFilter,
-        ratingMin,
-        ratingMax,
-        yearMin,
-        yearMax,
-        wordsFilter
+	includedOnly,
+	genresFilter,
+	moodsFilter,
+	ratingMin,
+	ratingMax,
+	yearMin,
+	yearMax,
+	wordsFilter
 };
