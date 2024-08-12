@@ -32,7 +32,7 @@ def get_categories(config, browser):
 
     return categories
 
-def get_all_listing_pages(browser, category, config):
+def get_all_listing_pages(config, browser, category):
     browser.get(category["main_page"])
     WebDriverWait(browser, 30).until(expected_conditions.presence_of_element_located((By.XPATH, "//a[@data-testid='see-more']")))
     more_pages = browser.find_elements(By.XPATH, "//a[@data-testid='see-more']") # element is not interactive, so just record the url

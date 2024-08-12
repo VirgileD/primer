@@ -32,7 +32,7 @@ if __name__ == "__main__":
         categories = get_categories(config, browser)
         shows = {}
         for category in categories:
-            category = get_all_listing_pages(browser, category, config)
+            category = get_all_listing_pages(config, browser, category)
             shows = scrap_category(config, browser, category, shows)
 
         save_all_shows(config, shows)
