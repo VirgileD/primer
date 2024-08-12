@@ -1,5 +1,5 @@
 from curses import raw
-from lxml import html
+from genericpath import exists
 import requests
 from pymongo  import MongoClient
 from halo import Halo
@@ -8,6 +8,7 @@ import argparse
 from utils.logmngt import get_logger
 from utils.cfgmngt import get_config
 from utils.dbmngt import setup_db
+from datetime import datetime, timedelta
 
 if __name__ == "__main__":
     config = get_config()
@@ -15,7 +16,7 @@ if __name__ == "__main__":
     setup_db(config)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-R", "--reset_status", action="store_true", help="Reset enriched status")
+    #parser.add_argument("-x", "--x_long_argument", action="store_true", help="a 'x_long_argument' var which is a boolean default to False")
     args = parser.parse_args()
 
     spinner = Halo(text='Loading', spinner='dots')
@@ -33,12 +34,14 @@ if __name__ == "__main__":
     shows_db = client.get_default_database("shows")
     enriched_coll = shows_db.enriched
     raw_coll  = shows_db.raw
-    if args.reset_status:
-        log.info(f"Reseting the enrichment status, all shows will be enriched")
-        raw_coll.update_many({}, { "$set": { "enriched": False } } )
+
+    current_date = datetime.now()
+    one_week_ago =  current_date - timedelta(days=7)
 
     spinner.start()
-    shows = list(raw_coll.find({ "enriched":  { "$in": [None, False ] } }))
+    shows = list(raw_coll.find({ "$or": [ {"last_enriched": { "$exists": False }}, { "last_enriched": { "$lt": one_week_ago }}]}))
+    raw_coll.update_many({}, { "$unset": { "last_enriched": True } } )
+
     idx = 1
     tot = len(shows)
     for show in shows:
@@ -56,11 +59,14 @@ if __name__ == "__main__":
             show = enrich_show(show, html_string)
         except Exception as e:
             spinner.stop()
-            log.error(f"Failed to enrich {show['title']} - {show['url']}: {e}")
+            if "could not convert string to float:" in str(e):
+                log.warning(f"Failed to enrich {show['title']} - {show['url']}: probably only available to buy")
+            else
+                log.error(f"Failed to enrich {show['title']} - {show['url']}: {e}")
             spinner.start()
             continue
-        raw_coll.update_one({ "id": show["id"] }, { "$set": { "enriched": True } })
-        enriched_coll.update_one({ "id": show["id"] }, { "$set": { **show, "enriched": True } }, upsert=True)
+        raw_coll.update_one({ "id": show["id"] }, { "$set": { "last_enriched": current_date } })
+        enriched_coll.update_one({ "id": show["id"] }, { "$set": { **show, "last_update": current_date } }, upsert=True)
     spinner.stop()
 
 #https://understandingdata.com/posts/how-to-easily-resize-compress-your-images-in-python/
