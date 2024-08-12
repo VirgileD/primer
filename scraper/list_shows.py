@@ -6,17 +6,12 @@ from list_helpers.login_process import login_process
 from list_helpers.misc import save_all_shows, goto_home_page
 from pyvirtualdisplay.display import Display
 from utils.logmngt import get_logger
+from utils.cfgmngt import get_config
 import os
 import yaml
 
 if __name__ == "__main__":
-    config = {}
-    if 'config.yml' in os.listdir():
-        with open("config.yml", "r") as f:
-            config = yaml.safe_load(f)
-    else:
-        print("No config file found")
-        exit(1)
+    config = get_config()
     log = get_logger("list_shows", cfg=config)
     log.debug("Starting list_shows")
 

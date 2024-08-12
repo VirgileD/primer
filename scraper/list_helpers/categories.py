@@ -61,12 +61,8 @@ def scrap_category(config, browser, category, shows):
         reread = 0
         while True:
             # browse the newly loaded cards
-            # FIXME: handle the case where the title contains a single quote
-            # there we just reread the conplete list of currently displayed cards so we reread some of them.
-            if last and "'" not in last:
-                article_elements = browser.find_elements(By.XPATH, "//article[@data-card-title='"+last.replace("'","&apos;")+"']/following-sibling::*")
-            else:
-                article_elements = browser.find_elements(By.XPATH, "//div[@data-testid='grid-mini-details-controller']/div/article")
+            # there we just thecurrently displayed cards so we sometimes reread some of them.
+            article_elements = browser.find_elements(By.XPATH, "//div[@data-testid='grid-mini-details-controller']/div/article")
             # there should always be cards, unless we're at the end of the list
             if not article_elements:
                 break
@@ -83,7 +79,7 @@ def scrap_category(config, browser, category, shows):
                     id = url.split('detail/')[1].split('/')[0]
                     if id not in these_shows:
                         tot += 1
-                        these_shows[id] = { "title": title, "url": url, "categories": [ category_name ], "type": type_ }
+                        these_shows[id] = { "title": title, "url": url, "type": type_ }
                     else:
                         reread += 1
                 except StaleElementReferenceException as e:
@@ -107,8 +103,7 @@ def scrap_category(config, browser, category, shows):
             shows[id] = these_show
             added += 1
         else:
-            shows[id]["categories"].append(category_name)
             already_known += 1
 
-    log.info(f"  => Added {added} shows from '{category_name}' category / {already_known} others were already known and updated")
+    log.info(f"  => Added {added} shows from '{category_name}' category / {already_known} others were in nmultiple categories")
     return shows

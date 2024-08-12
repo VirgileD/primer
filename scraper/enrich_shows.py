@@ -8,15 +8,10 @@ from enrich_helpers.enrich import enrich_show
 import yaml
 import argparse
 from utils.logmngt import get_logger
+from utils.cfgmngt import get_config
 
 if __name__ == "__main__":
-    config = {}
-    if 'config.yml' in os.listdir():
-        with open("config.yml", "r") as f:
-            config = yaml.safe_load(f)
-    else:
-        print("No config file found")
-        exit(1)
+    config = get_config()
     log = get_logger("enrich_shows", cfg=config)
 
     parser = argparse.ArgumentParser()
@@ -67,7 +62,7 @@ if __name__ == "__main__":
         raw_coll.update_one({ "id": show["id"] }, { "$set": { "enriched": True } })
         enriched_coll.update_one({ "id": show["id"] }, { "$set": { **show, "enriched": True } }, upsert=True)
     spinner.stop()
-    
+
 #https://understandingdata.com/posts/how-to-easily-resize-compress-your-images-in-python/
 
 # res = requests.get(url)
