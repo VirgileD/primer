@@ -37,9 +37,6 @@ unzip chromedriver-linux64.zip || { echo "Error: Failed to unzip Chromedriver bi
 echo "Removing archive files..."
 rm chrome-linux64.zip chromedriver-linux64.zip
 
-echo "Activating virtual environment..."
-
-
 echo "Setup completed successfully."
 
 echo "you can now pip install the requirements and run the script"

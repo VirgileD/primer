@@ -1,18 +1,18 @@
 from curses import raw
 from lxml import html
 import requests
-import os
 from pymongo  import MongoClient
 from halo import Halo
 from enrich_helpers.enrich import enrich_show
-import yaml
 import argparse
 from utils.logmngt import get_logger
 from utils.cfgmngt import get_config
+from utils.dbmngt import setup_db
 
 if __name__ == "__main__":
     config = get_config()
     log = get_logger("enrich_shows", cfg=config)
+    setup_db(config)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-R", "--reset_status", action="store_true", help="Reset enriched status")

@@ -7,14 +7,14 @@ from list_helpers.misc import save_all_shows, goto_home_page
 from pyvirtualdisplay.display import Display
 from utils.logmngt import get_logger
 from utils.cfgmngt import get_config
-import os
-import yaml
+from utils.dbmngt import setup_db
 
 if __name__ == "__main__":
     config = get_config()
     log = get_logger("list_shows", cfg=config)
     log.debug("Starting list_shows")
 
+    setup_db(config)
 
     if "email" not in config:
         config["email"] = input("Enter your email: ")

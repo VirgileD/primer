@@ -44,11 +44,16 @@ def get_all_listing_pages(config, browser, category):
 
 def scrap_category(config, browser, category, shows):
     log = get_logger("scrap_category", cfg=config)
-    category_name = category['name']
     spinner = Halo(spinner='dots')
-    these_shows = {}
+
+    category_name = category['name']
+    log.info(f" Scraping '{category_name}' category")
+    # retain the shows found in this category, whatever the type - there will only be duplicate when the scrolling is not working 
+    # fine and we rered the same element on the same page
+    category_shows = {}
+    already_known = 0
     for list_page in category["urls"]:
-        type_ = list_page["type"]
+        type_ = list_page["type"] # movie, tv shows, rent
         spinner.text = f"Scraping '{category_name}/{type_}'"
         spinner.start()
         browser.get(list_page["url"])
@@ -56,14 +61,13 @@ def scrap_category(config, browser, category, shows):
         WebDriverWait(browser, 30).until(expected_conditions.presence_of_element_located((By.XPATH, "//div[@data-testid='grid-mini-details-controller']")))
 
         last = None
-        tot = 0
+        category_total = 0
         staled = 0
         reread = 0
         while True:
-            # browse the newly loaded cards
-            # there we just thecurrently displayed cards so we sometimes reread some of them.
+            # only the currently displayed cards are in the DOM
             article_elements = browser.find_elements(By.XPATH, "//div[@data-testid='grid-mini-details-controller']/div/article")
-            # there should always be cards, unless we're at the end of the list
+            #  unless we're at the end of the list we find some
             if not article_elements:
                 break
             # FIXME: this is probably useless - the absence of an article_element should be enough
@@ -77,15 +81,26 @@ def scrap_category(config, browser, category, shows):
                     title = article_element.get_attribute("data-card-title")
                     url = article_element.find_element(By.XPATH, ".//a").get_attribute("href")
                     id = url.split('detail/')[1].split('/')[0]
-                    if id not in these_shows:
-                        tot += 1
-                        these_shows[id] = { "title": title, "url": url, "type": type_ }
+                    if id not in category_shows:
+                        category_total += 1
+                        category_shows[id] = { "title": title, "url": url, "type": type_ }
+                        #print(f" ####### {category_name} {type_} {id} {title}")
+                        if id not in shows:
+                            shows[id] = category_shows[id]
+                            shows[id]['new'] = True
+                            shows[id]['categories'] = [{ 'name': category_name, 'type': type_ }]
+                        else:
+                            shows[id]['categories'].append({ 'name': category_name, 'type': type_ })
+                            already_known += 1
                     else:
+                        #print(f" +++++++ {category_name} {type_} {id} {title}")
                         reread += 1
                 except StaleElementReferenceException as e:
                     staled += 1
             # when all the currently displayed cards have been processed, scroll down to load more
             browser.execute_script("arguments[0].scrollIntoView();", article_elements[-1])
+            # and scroll of the elements height 
+            browser.execute_script("window.scrollBy(0, 4 * arguments[0].offsetHeight);", article_elements[-1])
             WebDriverWait(browser, 30).until(document_complete())
             # FIXME: normally the document_complete expectation should be enough, but it's not
             time.sleep(0.5) # let the page settle down, otherwise it's breaking out of loop bc, probably, the next cards are not loaded
@@ -93,17 +108,8 @@ def scrap_category(config, browser, category, shows):
         # # Deletes the last line in the STDOUT"
         # sys.stdout.write('\x1b[1A')
         # sys.stdout.write('\x1b[2K')
-        log.info(f"    - found {tot} shows in '{category_name}/{type_}' page ({reread} reread, {staled} staled)")
-        save_all_shows(config, these_shows)
+        log.info(f"    - found {category_total} shows in '{category_name}/{type_}' page ({reread} reread, {staled} staled)")
+        save_all_shows(config, category_shows)
 
-    already_known = 0
-    added = 0
-    for id, these_show in these_shows.items():
-        if id not in shows:
-            shows[id] = these_show
-            added += 1
-        else:
-            already_known += 1
-
-    log.info(f"  => Added {added} shows from '{category_name}' category / {already_known} others were in nmultiple categories")
+    log.info(f"  => Added {len(category_shows)} shows from '{category_name}' category / {already_known} were in nmultiple categories")
     return shows
